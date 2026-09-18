@@ -11,78 +11,71 @@ app.use(express.json());
 
 // Define a route for GET requests
 app.get('/injections', (req, res) => {
-    res.json({ message: 'Returning list of users' });
+
+    var query = 'SELECT * FROM injections';
+
+    for(const item in req.query) {
+
+        if (keyArray.includes(item)) {
+            
+            if (typeof req.query[item] == 'string') {
+                query = `${query} WHERE ${item} = '${req.query[item]}'`
+            } else {
+                query = `${query} WHERE ${item} = ${req.query[item]}`
+            }
+        }
+    }
+
+    const selectQuery = database.prepare(query);
+    res.json({ message: selectQuery.all()});
 });
 
 // Define a route for POST requests
 app.post('/injections', (req, res) => {
 
-    // const fields = {
-    //     'time': true,
-    //     'ester': true,
-    //     'concentration': true,
-    //     'dose': true,
-    //     'site': false,
-    //     'recipient': false,
-    //     'vial': false,
-    //     'notes': false,
-    // };
+    var values;
 
-    // for(const item of tables.injections) {
-    //     console.log(item)
-    // }
+    for(const item of keyArray) {
 
-    // //console.log(req.body);
-    // //console.log(Object.keys(req.body));
+        if (item == 'uuid') {
+            values = `'${crypto.randomUUID()}'`
+        } else {
 
-    // for(const item in fields) {
-    //     if(fields[item] == true) {
-    //         console.log(Object.keys(req.body).includes(item))
-    //     }
-    // }
-
-    // for(const item in req.body) {
-    //     console.log(`${item} ${req.body[item]}`);
-    // }
-
-
-    //const insert = database.prepare('INSERT INTO injections (uuid, time) VALUES (?, ?)');
-
-    //insert.run(1, 'hello');
-    //insert.close(req.body['time']);
-
-    // const keyArray = tables['injections'].match(/([a-z]+)(?= )/gm)
-
-    // var keys = '';
-    // for(const key of keyArray) {
-    //     keys = `${keys}${key}, `;
-    // }
-    // console.log(keys.slice(0, -2));
-
-    const insert = database.prepare('INSERT INTO injections (uuid, time, ester, concentration, dose, site, recipient, vial, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
-    insert.run(crypto.randomUUID(), req.body['time'], req.body['ester'], req.body['concentration'], req.body['dose'], req.body['site'], req.body['recipient'], req.body['vial'], req.body['notes']);
-
-    if(req.body != undefined) {
-        
-        const newUser = req.body;
-        res.json({ message: 'User created', user: newUser });
-    } else {
-        res.json({ message: 'No body'});
+            if (typeof req.body[item] == 'string') {
+                values = `${values}, '${req.body[item]}'`
+            } else if (typeof req.body[item] == 'number') {
+                values = `${values}, ${req.body[item]}`
+            } else {
+                values = `${values}, NULL`
+            }
+        }
     }
+
+    const insert = database.prepare(`INSERT INTO injections (uuid, time, ester, concentration, dose, site, recipient, vial, notes) VALUES (${values})`);
+    
+    try {
+
+        insert.all();
+
+    } catch(err) {
+        console.warn(err);
+    }
+
+    res.json({ message: 'placeholder response'});
+
+    // if(req.body != undefined) {
+        
+    //     const newUser = req.body;
+    //     res.json({ message: 'User created', user: newUser });
+    // } else {
+    //     res.json({ message: 'No body'});
+    // }
 });
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
-/*
-INT
-INTEGER
-REAL
-TEXT
-BLOB
-ANY
-*/
 
 const tables = {
     'injections': `
@@ -105,6 +98,8 @@ const tables = {
     //     ) STRICT
     //     `,
 };
+
+const keyArray = tables['injections'].match(/([a-z]+)(?= )/gm)
 
 for(const item in tables) {
 
