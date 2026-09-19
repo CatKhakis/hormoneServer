@@ -172,7 +172,8 @@ for (const table in tables) {
             try {
 
                 const selectQuery = database.prepare(query);
-                res.json({ message: selectQuery.all()});
+                selectQuery.all();
+                res.json({ result: database.prepare(`SELECT * FROM ${table} WHERE uuid = '${uuid}'`).all()});
 
             } catch(err) {
                 console.warn(err);
