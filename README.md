@@ -63,12 +63,7 @@ Will include deleted uuid in response.
 ```
 services:
   hormonedb:
-    image: ghcr.io/catkhakis/hormoneserver
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    environment:
-      NODE_ENV: production
+    image: ghcr.io/catkhakis/hormoneserver:main
     ports:
-      - 3000:3000
+      - 9100:3000
 ```
