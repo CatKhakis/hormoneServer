@@ -2,5 +2,6 @@
 
 ### To-do
 - [x] allow multiple filters for get
-- [ ] delete entry
+- [x] delete entry
 - [ ] generalize functions to work for test results
+- [ ] return added entry

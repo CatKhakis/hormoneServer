@@ -83,6 +83,14 @@ app.post('/injections', (req, res) => {
     // }
 });
 
+// Define a route for GET requests
+app.delete('/injections', (req, res) => {
+    const query = database.prepare(`DELETE FROM injections where uuid = '${req.query.uuid}'`);
+    query.all();
+
+    res.json({ message: 'row deleted', uuid: req.query.uuid});
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
