@@ -13,15 +13,25 @@ app.use(express.json());
 app.get('/injections', (req, res) => {
 
     var query = 'SELECT * FROM injections';
+    var filters = [];
 
     for(const item in req.query) {
 
         if (keyArray.includes(item)) {
-            
-            if (typeof req.query[item] == 'string') {
-                query = `${query} WHERE ${item} = '${req.query[item]}'`
-            } else {
-                query = `${query} WHERE ${item} = ${req.query[item]}`
+
+            filters.push(item);
+        }
+    }
+
+    if (filters.length > 0) {
+        query = `${query} WHERE`
+
+        for(const filter in filters) {
+
+            query = `${query} ${filters[filter]} = '${req.query[filters[filter]]}'`
+
+            if (filter <= filters.length - 2) {
+                query = `${query} AND`
             }
         }
     }
@@ -29,6 +39,7 @@ app.get('/injections', (req, res) => {
     const selectQuery = database.prepare(query);
     res.json({ message: selectQuery.all()});
 });
+
 
 // Define a route for POST requests
 app.post('/injections', (req, res) => {
