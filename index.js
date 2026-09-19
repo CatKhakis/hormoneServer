@@ -1,13 +1,26 @@
 const express = require('express');
 const { randomUUID } = require('node:crypto');
 
+const fs = require('fs');
+const path = require('path');
+
+fs.mkdir(path.join(__dirname, 'db'),
+    { recursive: true },
+    (err) => {
+        if (err) {
+            return console.error(err);
+        }
+        console.log('Directory created successfully!');
+}); 
+
 const { DatabaseSync } = require('node:sqlite');
-const database = new DatabaseSync('./db/hormone.db');
+const database = new DatabaseSync('db/hormone.db');
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+
 
 
 
