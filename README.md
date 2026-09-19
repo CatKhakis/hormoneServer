@@ -66,4 +66,6 @@ services:
     image: ghcr.io/catkhakis/hormoneserver:main
     ports:
       - 9100:3000
+    volumes:
+      - ./db:/app/db
 ```
