@@ -2,5 +2,10 @@ hormone.db
 hormone.db-journal
 package-lock.json
 
+compose.debug.yaml
+
 /node_modules
+/.vscode
+/db
+
 .DS_Store
