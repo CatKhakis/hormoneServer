@@ -6,6 +6,5 @@ compose.debug.yaml
 
 /node_modules
 /.vscode
-/db
 
 .DS_Store
