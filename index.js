@@ -187,7 +187,7 @@ for (const table in tables) {
 
 
 
-// Define a route for GET requests
+// Define a route for DELETE requests
 for (const table in tables) {
     app.delete(`/${table}`, (req, res) => {
         const query = database.prepare(`UPDATE FROM ${table} where uuid = '${req.query.uuid.match(/[A-Za-z0-9.-]+/m)}'`);
