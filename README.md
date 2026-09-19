@@ -58,3 +58,17 @@ To be used for deleting data.
 The uuid MUST be included to select which row is to be deleted.
 Will run even if the uuid is not found in the database.
 Will include deleted uuid in response.
+
+## Docker Compose
+```
+services:
+  hormonedb:
+    image: ghcr.io/catkhakis/hormoneserver
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 3000:3000
+```
