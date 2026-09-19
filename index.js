@@ -9,6 +9,8 @@ const port = 3000;
 
 app.use(express.json());
 
+
+
 // Define a route for GET requests
 app.get('/injections', (req, res) => {
 
@@ -28,7 +30,7 @@ app.get('/injections', (req, res) => {
 
         for(const filter in filters) {
 
-            query = `${query} ${filters[filter]} = '${req.query[filters[filter]]}'`
+            query = `${query} ${filters[filter]} = '${req.query[filters[filter]].match(/[A-Za-z0-9.-]+/m)}'`
 
             if (filter <= filters.length - 2) {
                 query = `${query} AND`
@@ -39,6 +41,7 @@ app.get('/injections', (req, res) => {
     const selectQuery = database.prepare(query);
     res.json({ message: selectQuery.all()});
 });
+
 
 
 // Define a route for POST requests
@@ -53,7 +56,7 @@ app.post('/injections', (req, res) => {
         } else {
 
             if (typeof req.body[item] == 'string') {
-                values = `${values}, '${req.body[item]}'`
+                values = `${values}, '${req.body[item].match(/[A-Za-z0-9.-]+/m)}'`
             } else if (typeof req.body[item] == 'number') {
                 values = `${values}, ${req.body[item]}`
             } else {
@@ -73,19 +76,63 @@ app.post('/injections', (req, res) => {
     }
 
     res.json({ message: 'placeholder response'});
-
-    // if(req.body != undefined) {
-        
-    //     const newUser = req.body;
-    //     res.json({ message: 'User created', user: newUser });
-    // } else {
-    //     res.json({ message: 'No body'});
-    // }
 });
+
+
+
+// Define a route for PUT requests
+app.put('/injections', (req, res) => {
+
+
+    if(req.query.uuid) {
+
+        const uuid = req.query.uuid.match(/[A-Za-z0-9.-]+/m);
+        var query = 'UPDATE injections\nSET';
+
+        var filters = [];
+
+        for(const item in req.query) {
+
+            if (keyArray.includes(item) && item != 'uuid') {
+
+                filters.push(item);
+            }
+        }
+
+        if (filters.length > 0) {
+
+            for(const filter in filters) {
+
+                query = `${query} ${filters[filter]} = '${req.query[filters[filter]].match(/[A-Za-z0-9.-]+/m)}'`
+
+                if (filter <= filters.length - 2) {
+                    query = `${query},\n`
+                }
+            }
+        }
+
+        query = `${query}\nWHERE uuid = '${uuid}'`
+
+        try {
+
+            const selectQuery = database.prepare(query);
+            res.json({ message: selectQuery.all()});
+
+        } catch(err) {
+            console.warn(err);
+            res.json({ message: err});
+        }
+        
+    } else {
+        res.json({ message: 'error: no uuid provided'});
+    }
+});
+
+
 
 // Define a route for GET requests
 app.delete('/injections', (req, res) => {
-    const query = database.prepare(`DELETE FROM injections where uuid = '${req.query.uuid}'`);
+    const query = database.prepare(`UPDATE FROM injections where uuid = '${req.query.uuid.match(/[A-Za-z0-9.-]+/m)}'`);
     query.all();
 
     res.json({ message: 'row deleted', uuid: req.query.uuid});
@@ -94,6 +141,7 @@ app.delete('/injections', (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+
 
 
 const tables = {

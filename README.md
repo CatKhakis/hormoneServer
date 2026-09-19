@@ -5,3 +5,4 @@
 - [x] delete entry
 - [ ] generalize functions to work for test results
 - [ ] return added entry
+- [x] put requests for edits
