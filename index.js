@@ -48,17 +48,18 @@ app.get('/injections', (req, res) => {
 app.post('/injections', (req, res) => {
 
     var values;
+    const uuid = crypto.randomUUID()
 
     for(const item of keyArray) {
 
         if (item == 'uuid') {
-            values = `'${crypto.randomUUID()}'`
+            values = `'${uuid}'`
         } else {
 
-            if (typeof req.body[item] == 'string') {
-                values = `${values}, '${req.body[item].match(/[A-Za-z0-9.-]+/m)}'`
-            } else if (typeof req.body[item] == 'number') {
-                values = `${values}, ${req.body[item]}`
+            if (typeof req.query[item] == 'string') {
+                values = `${values}, '${req.query[item].match(/[A-Za-z0-9.-]+/m)}'`
+            } else if (typeof req.query[item] == 'number') {
+                values = `${values}, ${req.query[item]}`
             } else {
                 values = `${values}, NULL`
             }
@@ -70,12 +71,12 @@ app.post('/injections', (req, res) => {
     try {
 
         insert.all();
+        res.json({ result: database.prepare(`SELECT * FROM injections WHERE uuid = '${uuid}'`).all()});
 
     } catch(err) {
         console.warn(err);
+        res.json({ message: err});
     }
-
-    res.json({ message: 'placeholder response'});
 });
 
 
