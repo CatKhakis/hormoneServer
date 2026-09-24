@@ -63,7 +63,7 @@ Will include deleted uuid in response.
 ```
 services:
   hormonedb:
-    image: ghcr.io/catkhakis/hormoneserver:main
+    image: ghcr.io/zoeydoggy/hormoneserver:main
     ports:
       - 9100:3000
     volumes:
