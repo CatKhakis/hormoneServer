@@ -1,12 +1,20 @@
 const express = require('express');
 const { randomUUID } = require('node:crypto');
+const dotenv = require("dotenv").config();
+const https = require("https");
+const fs = require("fs");
+const path = require("path");
+
 
 const { DatabaseSync } = require('node:sqlite');
 const database = new DatabaseSync('db/hormone.db');
 
+
 var cors = require('cors');
+const morgan = require("morgan");
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
@@ -201,8 +209,19 @@ for (const table in tables) {
     });
 }
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+const options = {
+  key: fs.readFileSync(path.join(__dirname, "localhost-key.pem")),
+  cert: fs.readFileSync(path.join(__dirname, "localhost.pem")),
+};
+
+const server = https.createServer(options, app);
+
+server.listen(port, () => {
+  console.log(`App listening on https://localhost:${port}`);
 });
+
+// app.listen(port, () => {
+//   console.log(`Example app listening on port ${port}`);
+// });
 
 
